@@ -1,0 +1,13 @@
+{
+  "name": "online-food-delivery",
+  "version": "1.0.0",
+  "description": "This is my real-time online food delivery WebApp",
+  "main": "server.js",
+  "author": "SD",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "express-ejs-layouts": "^2.5.1"
+  }
+}
