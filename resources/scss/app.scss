@@ -39,3 +39,32 @@ section.hero{
         color: $pure;
     }
 }
+
+.btn-primary{
+    background: $primary;
+    transition: all 0.3s ease-in-out;
+    &:hover{
+        background: $primary-hover;
+    }
+}
+
+section.cart{
+    background: $secondary;
+    .amount{
+        color: $primary;
+    }
+}
+
+section.login{
+    background: $secondary;
+    min-height: 80vh;
+    a{
+        color: $primary;
+    }
+}
+
+footer{
+    width: 100%;
+    height: 60px;
+    background-color: rgb(37, 34, 34);
+}
