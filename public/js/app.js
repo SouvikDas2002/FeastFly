@@ -23,7 +23,16 @@ var updateCart = /*#__PURE__*/function () {
           return axios.post('/update-cart', item);
         case 2:
           cartItem = _context.sent;
-        case 3:
+          cartCounter.innerText = cartItem.data.totalQty;
+          Toastify({
+            text: "".concat(cartItem.data.totalQty, " added to your cart"),
+            duration: 2000,
+            className: "info",
+            style: {
+              background: "linear-gradient(to right, #00b09b, #96c93d)"
+            }
+          }).showToast();
+        case 5:
         case "end":
           return _context.stop();
       }

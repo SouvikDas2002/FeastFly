@@ -1,3 +1,4 @@
+// const initAdmin=require('./admin')
 
 let addToCart = document.getElementsByClassName('add-to-cart');
 
@@ -26,4 +27,12 @@ for (let i = 0; i < addToCart.length; i++) {
     };
 }
 
+// remove alert message after x seconds
 
+const alertMsg=document.getElementById('success-alert')
+
+if(alertMsg){
+    setTimeout(()=>{
+        alertMsg.remove()
+    },2000)
+}
