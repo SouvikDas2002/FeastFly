@@ -77,6 +77,19 @@ const initAdmin=()=>{
         `
         }).join('')
     }
+    let socket=io()
+    let adminArea=window.location.pathname
+console.log(adminArea);
+
+if(adminArea.includes('admin')){
+    socket.emit('join','adminRoom')
+}
+    socket.on('orderPlaced',(order)=>{
+        console.log(order);
+        orders.unshift(order);
+        orderTableBody.innerHTML=''
+        orderTableBody.innerHTML=generateMarkup(orders)
+    })
 }
 initAdmin()
 // module.exports=initAdmin;

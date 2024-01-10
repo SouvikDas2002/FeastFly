@@ -14,6 +14,8 @@ const orderController=()=>{
         async status(req,res){
             try{
             const updateStatus=await order.updateOne({_id:req.body.orderId},{status:req.body.status});
+            const eventEmitter=req.app.get('eventEmitter')
+            eventEmitter.emit('orderUpdated',{id:req.body.orderId,status:req.body.status})
             return res.redirect('/admin/orders')
             }catch(err){
                 return res.redirect('/admin/orders')

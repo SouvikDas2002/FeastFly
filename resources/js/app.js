@@ -41,11 +41,17 @@ if(alertMsg){
 
 let order=document.getElementById('hiddenInput') ? document.getElementById('hiddenInput').value :null
 order=JSON.parse(order)
-console.log(order);
+// console.log(order);
 
 let status=document.getElementsByClassName('status_line')
+
 function updateStatus(order){
     // console.log(status);
+    Array.from(status).forEach((x)=>{
+        x.classList.remove('step-completed')
+        x.classList.remove('current')
+    })
+
     let stepCompleted=true;
     Array.from(status).forEach(x => {
         let dataprop=x.dataset.status
@@ -62,3 +68,25 @@ function updateStatus(order){
     });
 }
 updateStatus(order);
+
+
+// Socket
+
+let socket=io();
+
+
+// join
+
+if(order){
+
+    socket.emit('join',`order_${order._id}`)
+}
+
+
+
+socket.on('orderUpdated',(data)=>{
+    const updatedOrder={...order}
+    updatedOrder.status=data.status
+    // console.log(data);
+    updateStatus(updatedOrder)
+})

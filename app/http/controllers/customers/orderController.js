@@ -21,10 +21,17 @@ const orderController=()=>{
             })
             const confirmOrder=await order.save();
             if(confirmOrder){
-                req.flash('success','Order placed successfully')
-                delete req.session.cart
-                return res.redirect('/customer/order')
-            }
+               const result=await Order.populate(confirmOrder,{path:'customerId'})
+
+                    req.flash('success','Order placed successfully')
+                    delete req.session.cart
+                    // Emit
+                    const eventEmitter=req.app.get('eventEmitter')
+                    eventEmitter.emit('orderPlaced',result)
+                    
+                    return res.redirect('/customer/order')
+                
+                }
             return res.redirect('/cart')
         },
         async index(req,res){

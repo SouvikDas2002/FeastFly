@@ -10,6 +10,7 @@ const flash=require('express-flash');
 const MongoDBStore=require("connect-mongo")
 const passport=require('passport')
 DB();
+const emitter=require('events')
 
 
 
@@ -20,6 +21,12 @@ DB();
     //     collection:'sessions'
     // })
     
+    // Event emitter
+
+    const eventEmitter=new emitter()
+    app.set('eventEmitter',eventEmitter);
+
+
     //session config
     
     app.use(session({
@@ -64,8 +71,21 @@ const server=app.listen(PORT,()=>{
 
 // socket
 
-// const io=require('socket.io')(server)
-// io.on('connection',()=>{
-//     // join
+const io=require('socket.io')(server)
+io.on('connection',(socket)=>{
+    // join
+    console.log(socket.id);
+    socket.on('join',(orderId)=>{
+        // console.log(orderId);
+        socket.join(orderId)
+    })
+})
 
-// })
+eventEmitter.on('orderUpdated',(data)=>{
+    io.to(`order_${data.id}`).emit('orderUpdated',data)
+})
+
+eventEmitter.on('orderPlaced',(data)=>{
+    console.log(data);
+    io.to('adminRoom').emit('orderPlaced',data)
+})
