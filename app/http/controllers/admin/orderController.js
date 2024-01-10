@@ -9,6 +9,15 @@ const orderController=()=>{
             }else{
             return res.render("admin/orders.ejs")
             }
+        },
+
+        async status(req,res){
+            try{
+            const updateStatus=await order.updateOne({_id:req.body.orderId},{status:req.body.status});
+            return res.redirect('/admin/orders')
+            }catch(err){
+                return res.redirect('/admin/orders')
+            }
         }
     }
 }

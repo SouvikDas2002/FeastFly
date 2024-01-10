@@ -36,3 +36,29 @@ if(alertMsg){
         alertMsg.remove()
     },2000)
 }
+
+// change order status
+
+let order=document.getElementById('hiddenInput') ? document.getElementById('hiddenInput').value :null
+order=JSON.parse(order)
+console.log(order);
+
+let status=document.getElementsByClassName('status_line')
+function updateStatus(order){
+    // console.log(status);
+    let stepCompleted=true;
+    Array.from(status).forEach(x => {
+        let dataprop=x.dataset.status
+        console.log(dataprop);
+        if(stepCompleted){
+            x.classList.add('step-completed')
+        }
+        if(dataprop===order.status){
+            stepCompleted=false
+            if(x.nextElementSibling){
+                x.nextElementSibling.classList.add('current')
+            }
+        }
+    });
+}
+updateStatus(order);

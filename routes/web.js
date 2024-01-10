@@ -28,9 +28,13 @@ const routeGateWay=(app)=>{
 
     app.get('/customer/order',auth,orderController().index)
 
+    app.get('/customer/order/:id',auth,orderController().show)
+
     // Admin routes
 
     app.get('/admin/orders',admin,adminController().index)
+    app.post('/admin/orders/status',admin,adminController().status)
+
 
     // same work but keep the logics in controller folders
     // app.get("/",(req,res)=>{

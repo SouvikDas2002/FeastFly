@@ -57,6 +57,15 @@ app.use(express.static('resources/js'));
 const routeGateWay=require("./routes/web");
 routeGateWay(app);
 
-app.listen(PORT,()=>{
+const server=app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`)
 })
+
+
+// socket
+
+// const io=require('socket.io')(server)
+// io.on('connection',()=>{
+//     // join
+
+// })
