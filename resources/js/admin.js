@@ -77,11 +77,13 @@ const initAdmin=()=>{
         `
         }).join('')
     }
+
     let socket=io()
     let adminArea=window.location.pathname
 console.log(adminArea);
 
 if(adminArea.includes('admin')){
+    // let socket=io()
     socket.emit('join','adminRoom')
 }
     socket.on('orderPlaced',(order)=>{

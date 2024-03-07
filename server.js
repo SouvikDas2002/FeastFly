@@ -63,6 +63,9 @@ app.use(express.static('resources/js'));
 
 const routeGateWay=require("./routes/web");
 routeGateWay(app);
+app.use((req,res)=>{
+    res.status(404).render('404.ejs');
+})
 
 const server=app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`)

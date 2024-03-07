@@ -167,3 +167,14 @@ section.status{
 .status-box ul li.current span{
     color: $primary;
 }
+
+@media(max-width:1060px){
+    .container{
+        max-width: 90%;
+    }
+    table{
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
