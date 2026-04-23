@@ -23,8 +23,8 @@
   </head>
   <body>
     <%- include('../layout.ejs') %>
-    <section class="orders light-section ml-14 mt-10">
-      <div class="container mx-auto pt-12">
+    <section class="orders light-section mt-6 px-4 md:px-10" style="min-height: 70vh">
+      <div class="container mx-auto pt-8">
         <h1 class="font-bold text-lg mb-4">All orders</h1>
         <% if(messages.success) { %>
         <div
@@ -44,35 +44,83 @@
           <p><%= messages.success %></p>
         </div>
         <% } %>
-        <table class="w-full table-auto bg-white">
-          <thead>
-            <tr>
-              <th class="px-4 py-2 text-left">Orders</th>
-              <th class="px-4 py-2 text-left">Phone</th>
-              <th class="px-4 py-2 text-left">Address</th>
-              <th class="px-4 py-2 text-left">Time</th>
-              <th class="px-4 py-2 text-left">Payment Method</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if(orders.length) { %> <% orders.forEach((order) => { %>
-            <tr>
-              <td class="border px-4 py-2">
-                <a class="link" href="/customer/order/<%= order._id %>"><%= order._id %></a>
-              </td>
-              <td class="border px-4 py-2"><%= order.phone %></td>
-              <td class="border px-4 py-2"><%= order.address %></td>
-              <td class="border px-4 py-2"><%= moment(order.createdAt).format('hh:mm A') %></td>
-              <td class="border px-4 py-2"><%= order.paymentType %></td>
-            </tr>
-            <% }) %> <% } else { %>
-            <tr>
-              <td class="p-4"><span>No orders found!</span></td>
-            </tr>
-            <% } %>
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full table-auto bg-white min-w-max">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 text-left">Orders</th>
+                <th class="px-4 py-2 text-left">Phone</th>
+                <th class="px-4 py-2 text-left">Address</th>
+                <th class="px-4 py-2 text-left">Time</th>
+                <th class="px-4 py-2 text-left">Payment</th>
+                <th class="px-4 py-2 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(orders.length) { %> <% orders.forEach((order) => { %> <% const statusMap = {
+              order_placed: { label: 'Order Placed', color: 'bg-blue-100 text-blue-800' },
+              confirmed: { label: 'Confirmed', color: 'bg-yellow-100 text-yellow-800' }, prepared: {
+              label: 'Preparing', color: 'bg-orange-100 text-orange-800' }, delivered: { label: 'Out
+              for Delivery', color: 'bg-purple-100 text-purple-800' }, completed: { label:
+              'Completed', color: 'bg-green-100 text-green-800' }, }; const s =
+              statusMap[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-800'
+              }; %>
+              <tr>
+                <td class="border px-4 py-2">
+                  <a class="link" href="/customer/order/<%= order._id %>"><%= order._id %></a>
+                </td>
+                <td class="border px-4 py-2"><%= order.phone %></td>
+                <td class="border px-4 py-2"><%= order.address %></td>
+                <td class="border px-4 py-2"><%= moment(order.createdAt).format('hh:mm A') %></td>
+                <td class="border px-4 py-2"><%= order.paymentType %></td>
+                <td class="border px-4 py-2">
+                  <span
+                    id="status-<%= order._id %>"
+                    class="px-2 py-1 rounded-full text-xs font-semibold <%= s.color %>"
+                    ><%= s.label %></span
+                  >
+                </td>
+              </tr>
+              <% }) %> <% } else { %>
+              <tr>
+                <td class="p-4"><span>No orders found!</span></td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
+    <input
+      type="hidden"
+      id="orderIdsData"
+      value="<%= JSON.stringify(orders.map(o => o._id.toString())) %>"
+    />
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const statusMap = {
+        order_placed: { label: 'Order Placed', color: 'bg-blue-100 text-blue-800' },
+        confirmed: { label: 'Confirmed', color: 'bg-yellow-100 text-yellow-800' },
+        prepared: { label: 'Preparing', color: 'bg-orange-100 text-orange-800' },
+        delivered: { label: 'Out for Delivery', color: 'bg-purple-100 text-purple-800' },
+        completed: { label: 'Completed', color: 'bg-green-100 text-green-800' },
+      };
+
+      const socket = io();
+      const orderIds = JSON.parse(document.getElementById('orderIdsData').value);
+      orderIds.forEach((id) => socket.emit('join', 'order_' + id));
+
+      socket.on('orderUpdated', (data) => {
+        const badge = document.getElementById('status-' + data.id);
+        if (!badge) return;
+        const s = statusMap[data.status] || {
+          label: data.status,
+          color: 'bg-gray-100 text-gray-800',
+        };
+        badge.className = 'px-2 py-1 rounded-full text-xs font-semibold ' + s.color;
+        badge.textContent = s.label;
+      });
+    </script>
+    <%- include('../partials/footer.ejs') %>
   </body>
 </html>

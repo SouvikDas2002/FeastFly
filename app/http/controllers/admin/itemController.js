@@ -15,7 +15,16 @@ const itemController = () => {
         req.flash('err', 'All fields are required');
         return res.redirect('/admin/items');
       }
-      await Item.create({ name, price: Number(price), size, image });
+      await Item.create({
+        name,
+        price: Number(price),
+        size,
+        image,
+        category: req.body.category || 'other',
+        isVeg: req.body.isVeg === 'on',
+        isPopular: req.body.isPopular === 'on',
+        isAvailable: req.body.isAvailable === 'on',
+      });
       req.flash('success', 'Item added successfully');
       return res.redirect('/admin/items');
     },
