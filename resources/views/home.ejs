@@ -1,61 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Shop</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&family=Lato:ital,wght@0,400;0,700;1,400;1,900&family=Lora:ital,wght@1,400;1,500;1,600&family=Urbanist:wght@100&family=Varela&family=Varela+Round&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/css/app.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeastFly | Order Food Online</title>
+    <meta
+      name="description"
+      content="Order delicious food online and get it delivered fast to your doorstep. Browse our menu and enjoy fresh meals with FeastFly."
+    />
+    <meta name="theme-color" content="#FE5F1E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="FeastFly | Order Food Online" />
+    <meta
+      property="og:description"
+      content="Order delicious food online and get it delivered fast to your doorstep. Browse our menu and enjoy fresh meals with FeastFly."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="FeastFly | Order Food Online" />
+    <meta
+      name="twitter:description"
+      content="Order delicious food online and get it delivered fast to your doorstep."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&family=Lato:ital,wght@0,400;0,700;1,400;1,900&family=Lora:ital,wght@1,400;1,500;1,600&family=Urbanist:wght@100&family=Varela&family=Varela+Round&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
+  </head>
+  <body>
     <%- include("layout.ejs") %>
 
     <section class="hero py-11">
-        <div class="container mx-auto flex items-center justify-between">
-            <div class="w-1/2 ml-10">
-                <h6 ><em>Feeling Hungry ! <b>Don't Wait</b></em></h6>
-                <h1 class="text-3xl md:text-6xl font-bold"><em>Lets Grab Some Food</em></h1>
-                <button class="btn-primary px-6 py-2 font-bold rounded-full text-white mt-4">Order Now</button>
-            </div>
-            <div class="w-1/2">
-                <img src="https://sherohomefood.in/wp-content/uploads/2023/07/IMG_5897.png" alt="">
-            </div>
+      <div class="container mx-auto flex items-center justify-between">
+        <div class="w-1/2 ml-10">
+          <h6>
+            <em>Feeling Hungry ! <b>Don't Wait</b></em>
+          </h6>
+          <h1 class="text-3xl md:text-6xl font-bold"><em>Lets Grab Some Food</em></h1>
+          <button class="btn-primary px-6 py-2 font-bold rounded-full text-white mt-4">
+            Order Now
+          </button>
         </div>
+        <div class="w-1/2">
+          <img src="https://sherohomefood.in/wp-content/uploads/2023/07/IMG_5897.png" alt="" />
+        </div>
+      </div>
     </section>
-
 
     <section class="menu container mx-auto py-8">
-        <h1 class="text-xl font-bold ml-10 mb-8" >All Items</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-16">
-            <% allItems.forEach((item)=>{ %>
+      <!-- Search & filter bar -->
+      <div class="flex flex-wrap items-center gap-3 ml-10 mb-8">
+        <h1 class="text-xl font-bold mr-4">All Items</h1>
+        <input
+          id="menu-search"
+          type="text"
+          placeholder="Search food…"
+          class="border border-gray-300 rounded-full px-4 py-1.5 text-sm w-48 focus:outline-none focus:border-orange-400"
+        />
+        <select
+          id="size-filter"
+          class="border border-gray-300 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:border-orange-400"
+        >
+          <option value="">All Sizes</option>
+          <option value="small">Small</option>
+          <option value="medium">Medium</option>
+          <option value="large">Large</option>
+        </select>
+        <span id="no-results" class="text-gray-400 text-sm hidden"
+          >No items match your search.</span
+        >
+      </div>
 
-                <div class="w-full md:w-64">
-                    <img class="h-40 mb-4 mx-auto" src="/img/<%=item.image%>" alt="">
-                <div class="text-center">
-                        
-                            <h2 class="mb-4 text-lg"><%= item.name%></h2>
-                            <span class="size py-1 px-4 rounded-full uppercase text-xs"><%= item.size %></span>
-                            <div class="flex items-center justify-around mt-6">
-                                <span class="font-bold text-lg">₹ <%= item.price %></span>
-                                <button data-items="<%=JSON.stringify(item)%>" class="add-to-cart py-1 px-6 rounded-full flex-items-center font-bold">
-                            <span>+</span>
-                            <span ml-4>Add</span>
-                        </button>
-                    </div>
-                
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-16">
+        <% allItems.forEach((item)=>{ %>
+        <div
+          class="item-card w-full md:w-64"
+          data-name="<%= item.name.toLowerCase() %>"
+          data-size="<%= item.size.toLowerCase() %>"
+        >
+          <img class="h-40 mb-4 mx-auto" src="/img/<%=item.image%>" alt="" />
+          <div class="text-center">
+            <h2 class="mb-4 text-lg"><%= item.name%></h2>
+            <span class="size py-1 px-4 rounded-full uppercase text-xs"><%= item.size %></span>
+            <div class="flex items-center justify-around mt-6">
+              <span class="font-bold text-lg">₹ <%= item.price %></span>
+              <button
+                data-items="<%=JSON.stringify(item)%>"
+                class="add-to-cart py-1 px-6 rounded-full flex-items-center font-bold"
+              >
+                <span>+</span>
+                <span ml-4>Add</span>
+              </button>
             </div>
+          </div>
         </div>
-        <% })%>
-
-        </div>
+        <% }) %>
+      </div>
     </section>
-    
+
+    <script>
+      const searchInput = document.getElementById('menu-search');
+      const sizeFilter = document.getElementById('size-filter');
+      const noResults = document.getElementById('no-results');
+
+      function filterMenu() {
+        const query = searchInput.value.toLowerCase().trim();
+        const size = sizeFilter.value.toLowerCase();
+        let visible = 0;
+        document.querySelectorAll('.item-card').forEach((card) => {
+          const nameMatch = !query || card.dataset.name.includes(query);
+          const sizeMatch = !size || card.dataset.size === size;
+          const show = nameMatch && sizeMatch;
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        });
+        noResults.classList.toggle('hidden', visible > 0);
+      }
+
+      searchInput.addEventListener('input', filterMenu);
+      sizeFilter.addEventListener('change', filterMenu);
+    </script>
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/app.js"></script>
-</body>
+  </body>
 </html>

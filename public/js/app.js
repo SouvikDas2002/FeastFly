@@ -85,7 +85,6 @@ function updateStatus(order) {
   var stepCompleted = true;
   Array.from(status).forEach(function (x) {
     var dataprop = x.dataset.status;
-    console.log(dataprop);
     if (stepCompleted) {
       x.classList.add('step-completed');
     }

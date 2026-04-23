@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeastFly | Verify Email</title>
+    <meta
+      name="description"
+      content="Enter your OTP to verify your email and activate your FeastFly account."
+    />
+    <meta name="theme-color" content="#FE5F1E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <%- include("../layout.ejs") %>
+
+    <section class="login flex justify-center pt-24">
+      <form
+        class="space-y-4 shadow-md rounded px-8 pt-6 pb-8 mb-6 w-full max-w-sm"
+        action="/verify-otp"
+        method="post"
+      >
+        <div class="text-center mb-2">
+          <h2 class="text-xl font-bold">Check your email</h2>
+          <p class="text-gray-500 text-sm mt-1">
+            We sent a 6-digit code to <strong><%= email %></strong>
+          </p>
+        </div>
+
+        <% if(messages.err){ %>
+        <span class="block text-red-500 text-sm"><%= messages.err %></span>
+        <% } %>
+
+        <div>
+          <label class="block mb-2 text-sm font-medium text-gray-900">Verification Code</label>
+          <input
+            type="text"
+            name="otp"
+            maxlength="6"
+            required
+            autofocus
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-center text-2xl tracking-widest rounded-lg block w-full p-2.5"
+            placeholder="------"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="btn-primary w-full text-white font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+        >
+          Verify & Create Account
+        </button>
+
+        <p class="text-sm text-center text-gray-500">
+          Wrong email? <a href="/register" class="text-blue-600 hover:underline">Go back</a>
+        </p>
+      </form>
+    </section>
+  </body>
+</html>

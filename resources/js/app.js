@@ -1,92 +1,87 @@
 // const initAdmin=require('./admin')
 
-let addToCart = document.getElementsByClassName('add-to-cart');
+const addToCart = document.getElementsByClassName('add-to-cart');
 
-let cartCounter=document.getElementById("cartCounter");
+const cartCounter = document.getElementById('cartCounter');
 
-const updateCart=async (item)=>{
-    // console.log(cartItem);
-    const cartItem=await axios.post('/update-cart',item)
-    cartCounter.innerText=cartItem.data.totalQty;
-    Toastify({
-        text: `${cartItem.data.totalQty} added to your cart`,
-        duration:2000,
-        className: "info",
-        style: {
-            background: "linear-gradient(to right, #00b09b, #96c93d)",
-        }
-    }).showToast();
-    
-}
+const updateCart = async (item) => {
+  // console.log(cartItem);
+  const cartItem = await axios.post('/update-cart', item);
+  cartCounter.innerText = cartItem.data.totalQty;
+  Toastify({
+    text: `${cartItem.data.totalQty} added to your cart`,
+    duration: 2000,
+    className: 'info',
+    style: {
+      background: 'linear-gradient(to right, #00b09b, #96c93d)',
+    },
+  }).showToast();
+};
 
 for (let i = 0; i < addToCart.length; i++) {
-    addToCart[i].onclick = () => {
-        const itemData=JSON.parse(addToCart[i].dataset.items);
-        updateCart(itemData)
-        // console.log(itemData);
-    };
+  addToCart[i].onclick = () => {
+    const itemData = JSON.parse(addToCart[i].dataset.items);
+    updateCart(itemData);
+    // console.log(itemData);
+  };
 }
 
 // remove alert message after x seconds
 
-const alertMsg=document.getElementById('success-alert')
+const alertMsg = document.getElementById('success-alert');
 
-if(alertMsg){
-    setTimeout(()=>{
-        alertMsg.remove()
-    },2000)
+if (alertMsg) {
+  setTimeout(() => {
+    alertMsg.remove();
+  }, 2000);
 }
 
 // change order status
 
-let order=document.getElementById('hiddenInput') ? document.getElementById('hiddenInput').value :null
-order=JSON.parse(order)
+let order = document.getElementById('hiddenInput')
+  ? document.getElementById('hiddenInput').value
+  : null;
+order = JSON.parse(order);
 // console.log(order);
 
-let status=document.getElementsByClassName('status_line')
+const status = document.getElementsByClassName('status_line');
 
-function updateStatus(order){
-    // console.log(status);
-    Array.from(status).forEach((x)=>{
-        x.classList.remove('step-completed')
-        x.classList.remove('current')
-    })
+function updateStatus(order) {
+  // console.log(status);
+  Array.from(status).forEach((x) => {
+    x.classList.remove('step-completed');
+    x.classList.remove('current');
+  });
 
-    let stepCompleted=true;
-    Array.from(status).forEach(x => {
-        let dataprop=x.dataset.status
-        console.log(dataprop);
-        if(stepCompleted){
-            x.classList.add('step-completed')
-        }
-        if(dataprop===order.status){
-            stepCompleted=false
-            if(x.nextElementSibling){
-                x.nextElementSibling.classList.add('current')
-            }
-        }
-    });
+  let stepCompleted = true;
+  Array.from(status).forEach((x) => {
+    const dataprop = x.dataset.status;
+    if (stepCompleted) {
+      x.classList.add('step-completed');
+    }
+    if (dataprop === order.status) {
+      stepCompleted = false;
+      if (x.nextElementSibling) {
+        x.nextElementSibling.classList.add('current');
+      }
+    }
+  });
 }
 updateStatus(order);
 
-
 // Socket
 
-let socket=io();
-
+const socket = io();
 
 // join
 
-if(order){
-
-    socket.emit('join',`order_${order._id}`)
+if (order) {
+  socket.emit('join', `order_${order._id}`);
 }
 
-
-
-socket.on('orderUpdated',(data)=>{
-    const updatedOrder={...order}
-    updatedOrder.status=data.status
-    // console.log(data);
-    updateStatus(updatedOrder)
-})
+socket.on('orderUpdated', (data) => {
+  const updatedOrder = { ...order };
+  updatedOrder.status = data.status;
+  // console.log(data);
+  updateStatus(updatedOrder);
+});

@@ -1,53 +1,53 @@
-const homeController=require("../app/http/controllers/homeController")
-const authController=require("../app/http/controllers/authController")
-const cartController=require("../app/http/controllers/customers/cartController")
-const guest=require('../app/http/middlewares/guest')
-const orderController=require("../app/http/controllers/customers/orderController")
-const auth=require('../app/http/middlewares/auth')
-const admin=require('../app/http/middlewares/admin')
-const adminController=require('../app/http/controllers/admin/orderController');
+const homeController = require('../app/http/controllers/homeController');
+const authController = require('../app/http/controllers/authController');
+const cartController = require('../app/http/controllers/customers/cartController');
+const orderController = require('../app/http/controllers/customers/orderController');
+const paymentController = require('../app/http/controllers/customers/paymentController');
+const profileController = require('../app/http/controllers/customers/profileController');
+const adminController = require('../app/http/controllers/admin/orderController');
+const itemController = require('../app/http/controllers/admin/itemController');
+const guest = require('../app/http/middlewares/guest');
+const auth = require('../app/http/middlewares/auth');
+const admin = require('../app/http/middlewares/admin');
 
-const routeGateWay=(app)=>{
-    app.get("/",homeController().index)
+const routeGateWay = (app) => {
+  app.get('/', homeController().index);
 
-    app.get("/login",guest,authController().login)
-    
-    app.post("/login",authController().postLogin)
-    
-    app.get("/register",guest,authController().register)
-    
-    app.post("/register",authController().postRegister)
-    
-    app.get("/cart",cartController().cart)
-    
-    app.post("/update-cart",cartController().update);
+  app.get('/login', guest, authController().login);
+  app.post('/login', authController().postLogin);
 
-    app.post("/logout",authController().logout);
+  app.get('/register', guest, authController().register);
+  app.post('/register', authController().postRegister);
 
-    app.post("/orders",auth,orderController().store);
+  app.get('/verify-otp', authController().verifyOtp);
+  app.post('/verify-otp', authController().postVerifyOtp);
 
-    app.get('/customer/order',auth,orderController().index)
+  app.get('/cart', cartController().cart);
+  app.post('/update-cart', cartController().update);
+  app.post('/remove-from-cart', cartController().remove);
 
-    app.get('/customer/order/:id',auth,orderController().show)
+  app.post('/logout', authController().logout);
 
-    // Admin routes
+  app.post('/orders', auth, orderController().store);
+  app.get('/customer/order', auth, orderController().index);
+  app.get('/customer/order/:id', auth, orderController().show);
 
-    app.get('/admin/orders',admin,adminController().index)
-    app.post('/admin/orders/status',admin,adminController().status)
+  // Payment routes
+  app.post('/payment/create-order', auth, paymentController().createOrder);
+  app.post('/payment/verify', auth, paymentController().verify);
 
+  // Profile & saved addresses
+  app.get('/customer/profile', auth, profileController().index);
+  app.post('/customer/addresses', auth, profileController().addAddress);
+  app.post('/customer/addresses/delete', auth, profileController().deleteAddress);
 
-    // same work but keep the logics in controller folders
-    // app.get("/",(req,res)=>{
-    //     res.render('home')
-    // })
-    // app.get("/cart",(req,res)=>{
-    //     res.render('customers/cart')
-    // })
-    // app.get("/login",(req,res)=>{
-    //     res.render('auth/login')
-    // })
-    // app.get("/register",(req,res)=>{
-    //     res.render('auth/register')
-    // })
-}
-module.exports=routeGateWay;
+  // Admin routes
+  app.get('/admin/orders', admin, adminController().index);
+  app.post('/admin/orders/status', admin, adminController().status);
+
+  app.get('/admin/items', admin, itemController().index);
+  app.post('/admin/items', admin, itemController().store);
+  app.post('/admin/items/delete', admin, itemController().destroy);
+};
+
+module.exports = routeGateWay;
