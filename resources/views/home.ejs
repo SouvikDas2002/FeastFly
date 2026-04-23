@@ -45,67 +45,257 @@
   <body>
     <%- include("layout.ejs") %>
 
-    <section class="hero py-11">
-      <div class="container mx-auto flex items-center justify-between">
-        <div class="w-1/2 ml-10">
-          <h6>
+    <section
+      class="hero relative overflow-hidden"
+      style="min-height: 260px; max-height: 520px; height: 52vw"
+    >
+      <!-- Carousel slides -->
+      <img
+        class="hero-slide absolute inset-0 w-full h-full object-cover opacity-100 transition-opacity duration-1000"
+        src="/img/hero-img.jpg"
+        alt="Food spread"
+      />
+      <img
+        class="hero-slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000"
+        src="/img/hero-img2.png"
+        alt="Restaurant food"
+      />
+      <img
+        class="hero-slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000"
+        src="/img/hero-img3.jpg"
+        alt="Delicious meal"
+      />
+
+      <!-- Dark overlay + text (always on top) -->
+      <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center z-10">
+        <div class="container mx-auto px-4 md:px-10 text-white text-center md:text-left">
+          <h6 class="text-sm md:text-base font-medium">
             <em>Feeling Hungry ! <b>Don't Wait</b></em>
           </h6>
-          <h1 class="text-3xl md:text-6xl font-bold"><em>Lets Grab Some Food</em></h1>
-          <button class="btn-primary px-6 py-2 font-bold rounded-full text-white mt-4">
+          <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold mt-2">
+            <em>Lets Grab Some Food</em>
+          </h1>
+          <button class="btn-primary px-6 py-2 font-bold rounded-full text-white mt-6">
             Order Now
           </button>
         </div>
-        <div class="w-1/2">
-          <img src="https://sherohomefood.in/wp-content/uploads/2023/07/IMG_5897.png" alt="" />
+      </div>
+
+      <!-- Dot indicators -->
+      <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
+        <span
+          class="hero-dot w-2.5 h-2.5 rounded-full bg-white cursor-pointer"
+          style="opacity: 1"
+        ></span>
+        <span
+          class="hero-dot w-2.5 h-2.5 rounded-full bg-white cursor-pointer"
+          style="opacity: 0.4"
+        ></span>
+        <span
+          class="hero-dot w-2.5 h-2.5 rounded-full bg-white cursor-pointer"
+          style="opacity: 0.4"
+        ></span>
+      </div>
+    </section>
+
+    <script>
+      (function () {
+        var slides = document.querySelectorAll('.hero-slide');
+        var dots = document.querySelectorAll('.hero-dot');
+        var cur = 0;
+
+        function goTo(n) {
+          slides[cur].style.opacity = '0';
+          dots[cur].style.opacity = '0.4';
+          cur = (n + slides.length) % slides.length;
+          slides[cur].style.opacity = '1';
+          dots[cur].style.opacity = '1';
+        }
+
+        dots.forEach(function (dot, i) {
+          dot.addEventListener('click', function () {
+            goTo(i);
+          });
+        });
+
+        setInterval(function () {
+          goTo(cur + 1);
+        }, 4000);
+      })();
+    </script>
+
+    <!-- Category strip -->
+    <section class="bg-white border-b border-gray-100 py-6 px-4 md:px-10">
+      <div class="container mx-auto">
+        <h2 class="text-base md:text-lg font-bold mb-5 text-gray-800">What's on your mind?</h2>
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 md:gap-3">
+          <button class="category-pill active" data-category="all">
+            <div class="cat-card">
+              <img src="/img/cat-all.jpg" alt="All" />
+              <div class="cat-label">All</div>
+            </div>
+          </button>
+
+          <button class="category-pill" data-category="north-indian">
+            <div class="cat-card">
+              <img src="/img/north-food.jpg" alt="North Indian" />
+              <div class="cat-label">North Indian</div>
+            </div>
+          </button>
+
+          <button class="category-pill" data-category="south-indian">
+            <div class="cat-card">
+              <img src="/img/south-food.jpg" alt="South Indian" />
+              <div class="cat-label">South Indian</div>
+            </div>
+          </button>
+
+          <button class="category-pill" data-category="pizza">
+            <div class="cat-card">
+              <img src="/img/piz1.jpg" alt="Pizza" />
+              <div class="cat-label">Pizza</div>
+            </div>
+          </button>
+
+          <button class="category-pill" data-category="burgers">
+            <div class="cat-card">
+              <img src="/img/burger-food.jpg" alt="Burgers" />
+              <div class="cat-label">Burgers</div>
+            </div>
+          </button>
+
+          <button class="category-pill" data-category="meals">
+            <div class="cat-card">
+              <img src="/img/meal-food.jpg" alt="Meals" />
+              <div class="cat-label">Meals</div>
+            </div>
+          </button>
+
+          <button class="category-pill" data-category="drinks">
+            <div class="cat-card">
+              <img src="/img/drinks.jpg" alt="Drinks" />
+              <div class="cat-label">Drinks</div>
+            </div>
+          </button>
+
+          <button class="category-pill" data-category="desserts">
+            <div class="cat-card">
+              <img src="/img/desert.jpg" alt="Desserts" />
+              <div class="cat-label">Desserts</div>
+            </div>
+          </button>
         </div>
       </div>
     </section>
 
-    <section class="menu container mx-auto py-8">
+    <section class="menu container mx-auto py-8 px-4 md:px-10">
       <!-- Search & filter bar -->
-      <div class="flex flex-wrap items-center gap-3 ml-10 mb-8">
-        <h1 class="text-xl font-bold mr-4">All Items</h1>
-        <input
-          id="menu-search"
-          type="text"
-          placeholder="Search food…"
-          class="border border-gray-300 rounded-full px-4 py-1.5 text-sm w-48 focus:outline-none focus:border-orange-400"
-        />
-        <select
-          id="size-filter"
-          class="border border-gray-300 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:border-orange-400"
-        >
-          <option value="">All Sizes</option>
-          <option value="small">Small</option>
-          <option value="medium">Medium</option>
-          <option value="large">Large</option>
-        </select>
-        <span id="no-results" class="text-gray-400 text-sm hidden"
+      <div class="mb-6">
+        <h1 class="text-xl font-bold mb-3">All Items</h1>
+        <div class="flex flex-wrap gap-2">
+          <input
+            id="menu-search"
+            type="text"
+            placeholder="Search food…"
+            class="border border-gray-300 rounded-full px-4 py-2 text-sm flex-1 min-w-0 focus:outline-none focus:border-orange-400"
+          />
+          <select
+            id="size-filter"
+            class="border border-gray-300 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:border-orange-400"
+          >
+            <option value="">All Sizes</option>
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+          </select>
+          <select
+            id="price-sort"
+            class="border border-gray-300 rounded-full px-4 py-1.5 text-sm focus:outline-none focus:border-orange-400"
+          >
+            <option value="">Sort by Price</option>
+            <option value="asc">Price: Low → High</option>
+            <option value="desc">Price: High → Low</option>
+          </select>
+        </div>
+        <span id="no-results" class="text-gray-400 text-sm hidden mt-2 block"
           >No items match your search.</span
         >
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-16">
-        <% allItems.forEach((item)=>{ %>
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-x-6 md:gap-y-12"
+      >
+        <% allItems.forEach((item)=>{ %> <% const available = item.isAvailable !== false; %>
         <div
-          class="item-card w-full md:w-64"
+          class="item-card relative flex sm:block items-center gap-4 bg-white sm:bg-transparent rounded-xl sm:rounded-none shadow-sm sm:shadow-none p-3 sm:p-0 <%= !available ? 'opacity-60' : '' %>"
           data-name="<%= item.name.toLowerCase() %>"
           data-size="<%= item.size.toLowerCase() %>"
+          data-price="<%= item.price %>"
+          data-category="<%= (item.category || 'other').toLowerCase() %>"
         >
-          <img class="h-40 mb-4 mx-auto" src="/img/<%=item.image%>" alt="" />
-          <div class="text-center">
-            <h2 class="mb-4 text-lg"><%= item.name%></h2>
-            <span class="size py-1 px-4 rounded-full uppercase text-xs"><%= item.size %></span>
-            <div class="flex items-center justify-around mt-6">
-              <span class="font-bold text-lg">₹ <%= item.price %></span>
+          <!-- Image wrapper — fixed size on mobile, full-width on sm+ -->
+          <div class="relative flex-shrink-0 w-24 h-24 sm:w-full sm:h-40 sm:mb-4">
+            <!-- Veg / Non-veg dot -->
+            <div
+              class="absolute top-1 left-1 z-10 w-4 h-4 rounded border-2 <%= item.isVeg === false ? 'border-red-600' : 'border-green-600' %> flex items-center justify-center bg-white"
+            >
+              <div
+                class="w-2 h-2 rounded-sm <%= item.isVeg === false ? 'bg-red-600' : 'bg-green-600' %>"
+              ></div>
+            </div>
+
+            <img
+              class="w-full h-full object-cover rounded-lg sm:rounded-none sm:object-contain sm:mx-auto"
+              src="/img/<%=item.image%>"
+              alt="<%= item.name %>"
+            />
+
+            <!-- Sold-out badge on image -->
+            <% if (!available) { %>
+            <div
+              class="absolute inset-0 flex items-center justify-center rounded-lg sm:rounded-none"
+            >
+              <span class="bg-gray-800 text-white text-xs px-2 py-0.5 rounded-full font-semibold"
+                >Sold Out</span
+              >
+            </div>
+            <% } %>
+          </div>
+
+          <!-- Content -->
+          <div class="flex-1 min-w-0 sm:text-center">
+            <!-- Bestseller badge: inline on mobile, absolute on sm+ -->
+            <% if (item.isPopular) { %>
+            <span
+              class="inline-block sm:absolute sm:top-2 sm:right-2 mb-1 sm:mb-0 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold"
+              >&#9733; Bestseller</span
+            >
+            <% } %>
+
+            <h2 class="text-sm sm:text-base md:text-lg font-semibold mb-1 sm:mb-3 truncate">
+              <%= item.name %>
+            </h2>
+            <span class="size py-0.5 px-3 rounded-full uppercase text-xs"><%= item.size %></span>
+
+            <div class="flex items-center justify-between sm:justify-around mt-3 sm:mt-5">
+              <span class="font-bold text-sm sm:text-base md:text-lg"
+                >&#8377;<%= item.price %></span
+              >
+              <% if (available) { %>
               <button
                 data-items="<%=JSON.stringify(item)%>"
-                class="add-to-cart py-1 px-6 rounded-full flex-items-center font-bold"
+                class="add-to-cart py-1 px-3 sm:px-5 rounded-full font-bold text-xs sm:text-sm"
               >
-                <span>+</span>
-                <span ml-4>Add</span>
+                + Add
               </button>
+              <% } else { %>
+              <button
+                disabled
+                class="py-1 px-3 rounded-full font-bold text-gray-400 border border-gray-300 cursor-not-allowed text-xs sm:text-sm"
+              >
+                Sold Out
+              </button>
+              <% } %>
             </div>
           </div>
         </div>
@@ -117,6 +307,7 @@
       const searchInput = document.getElementById('menu-search');
       const sizeFilter = document.getElementById('size-filter');
       const noResults = document.getElementById('no-results');
+      let activeCategory = 'all';
 
       function filterMenu() {
         const query = searchInput.value.toLowerCase().trim();
@@ -125,7 +316,8 @@
         document.querySelectorAll('.item-card').forEach((card) => {
           const nameMatch = !query || card.dataset.name.includes(query);
           const sizeMatch = !size || card.dataset.size === size;
-          const show = nameMatch && sizeMatch;
+          const catMatch = activeCategory === 'all' || card.dataset.category === activeCategory;
+          const show = nameMatch && sizeMatch && catMatch;
           card.style.display = show ? '' : 'none';
           if (show) visible++;
         });
@@ -134,10 +326,39 @@
 
       searchInput.addEventListener('input', filterMenu);
       sizeFilter.addEventListener('change', filterMenu);
+
+      document.querySelectorAll('.category-pill').forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          document.querySelectorAll('.category-pill').forEach(function (p) {
+            p.classList.remove('active');
+          });
+          this.classList.add('active');
+          activeCategory = this.dataset.category;
+          filterMenu();
+        });
+      });
+
+      const priceSort = document.getElementById('price-sort');
+      const menuGrid = document.querySelector('.grid');
+
+      priceSort.addEventListener('change', function () {
+        const dir = this.value;
+        if (!dir) return;
+        const cards = Array.from(document.querySelectorAll('.item-card'));
+        cards.sort(function (a, b) {
+          const pa = parseInt(a.dataset.price, 10);
+          const pb = parseInt(b.dataset.price, 10);
+          return dir === 'asc' ? pa - pb : pb - pa;
+        });
+        cards.forEach(function (c) {
+          menuGrid.appendChild(c);
+        });
+      });
     </script>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="/app.js"></script>
+    <%- include('./partials/footer.ejs') %>
   </body>
 </html>

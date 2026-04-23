@@ -9,6 +9,7 @@ const itemController = require('../app/http/controllers/admin/itemController');
 const guest = require('../app/http/middlewares/guest');
 const auth = require('../app/http/middlewares/auth');
 const admin = require('../app/http/middlewares/admin');
+const passport = require('passport');
 
 const routeGateWay = (app) => {
   app.get('/', homeController().index);
@@ -21,6 +22,15 @@ const routeGateWay = (app) => {
 
   app.get('/verify-otp', authController().verifyOtp);
   app.post('/verify-otp', authController().postVerifyOtp);
+
+  app.get('/auth/google', guest, passport.authenticate('google', { scope: ['profile', 'email'] }));
+  app.get(
+    '/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+      res.redirect(req.user.role === 'admin' ? '/admin/orders' : '/customer/order');
+    }
+  );
 
   app.get('/cart', cartController().cart);
   app.post('/update-cart', cartController().update);
