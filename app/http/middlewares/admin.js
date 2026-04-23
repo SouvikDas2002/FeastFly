@@ -1,12 +1,13 @@
-const user=require('../../models/user');
-async function admin(req,res,next){
-    try{
-    const admin=await user.findOne({_id:req.user._conditions._id})
-    if(req.isAuthenticated() && admin.role==='admin'){
-        return next();
+const user = require('../../models/user');
+async function admin(req, res, next) {
+  try {
+    const admin = await user.findOne({ _id: req.user._id });
+    if (req.isAuthenticated() && admin && admin.role === 'admin') {
+      return next();
     }
-}catch(err){
-    return res.redirect('/')
+    return res.redirect('/');
+  } catch (_) {
+    return res.redirect('/');
+  }
 }
-}
-module.exports=admin;
+module.exports = admin;

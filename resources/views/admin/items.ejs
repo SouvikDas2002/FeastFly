@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeastFly | Manage Items</title>
+    <meta name="description" content="Admin panel — manage menu items on FeastFly." />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#FE5F1E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <%- include('../layout.ejs') %>
+
+    <section class="light-section">
+      <div class="container mx-auto pt-12 px-4">
+        <% if(success && success.length > 0) { %>
+        <div class="mb-4 px-4 py-2 bg-green-100 text-green-800 rounded"><%= success %></div>
+        <% } %> <% if(err && err.length > 0) { %>
+        <div class="mb-4 px-4 py-2 bg-red-100 text-red-800 rounded"><%= err %></div>
+        <% } %>
+
+        <!-- Add Item Form -->
+        <div class="bg-white p-6 rounded shadow mb-10">
+          <h2 class="font-bold text-lg mb-4">Add New Item</h2>
+          <form action="/admin/items" method="POST" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label class="block text-sm font-medium mb-1">Name</label>
+              <input
+                type="text"
+                name="name"
+                required
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                placeholder="e.g. Margherita"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Price (₹)</label>
+              <input
+                type="number"
+                name="price"
+                required
+                min="1"
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                placeholder="e.g. 250"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Size</label>
+              <select
+                name="size"
+                required
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+              >
+                <option value="">Select size</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Image filename</label>
+              <input
+                type="text"
+                name="image"
+                required
+                class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                placeholder="e.g. pizza.png"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <button
+                type="submit"
+                class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Add Item
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Items Table -->
+        <h1 class="font-bold text-lg mb-4">All Items (<%= items.length %>)</h1>
+        <table class="w-full table-auto bg-white rounded shadow">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="px-4 py-2 text-left">Image</th>
+              <th class="px-4 py-2 text-left">Name</th>
+              <th class="px-4 py-2 text-left">Price</th>
+              <th class="px-4 py-2 text-left">Size</th>
+              <th class="px-4 py-2 text-left">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(item => { %>
+            <tr class="border-t">
+              <td class="px-4 py-2">
+                <img
+                  src="/img/<%= item.image %>"
+                  alt="<%= item.name %>"
+                  class="h-10 w-10 object-cover rounded"
+                />
+              </td>
+              <td class="px-4 py-2"><%= item.name %></td>
+              <td class="px-4 py-2">₹<%= item.price %></td>
+              <td class="px-4 py-2 capitalize"><%= item.size %></td>
+              <td class="px-4 py-2">
+                <form
+                  action="/admin/items/delete"
+                  method="POST"
+                  onsubmit="return confirm('Delete this item?');"
+                >
+                  <input type="hidden" name="itemId" value="<%= item._id %>" />
+                  <button
+                    type="submit"
+                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+            <% }) %> <% if(items.length === 0) { %>
+            <tr>
+              <td colspan="5" class="px-4 py-4 text-center text-gray-500">No items yet.</td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

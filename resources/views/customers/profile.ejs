@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeastFly | My Profile</title>
+    <meta name="description" content="Manage your FeastFly profile and saved delivery addresses." />
+    <meta name="theme-color" content="#FE5F1E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&family=Lato:ital,wght@0,400;0,700;1,400;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+  </head>
+  <body>
+    <%- include("../layout.ejs") %>
+
+    <section class="py-12">
+      <div class="container mx-auto max-w-lg px-4">
+        <% if(messages.err){ %>
+        <div class="bg-red-100 text-red-700 rounded-lg p-3 mb-4"><%= messages.err %></div>
+        <% } %> <% if(messages.success){ %>
+        <div class="bg-green-100 text-green-700 rounded-lg p-3 mb-4"><%= messages.success %></div>
+        <% } %>
+
+        <!-- Account info -->
+        <div class="mb-8 pb-6 border-b border-gray-200">
+          <h2 class="text-xl font-bold mb-1"><%= profileUser.username %></h2>
+          <p class="text-gray-500 text-sm"><%= profileUser.email %></p>
+        </div>
+
+        <!-- Saved addresses -->
+        <h3 class="text-lg font-bold mb-4">Saved Addresses</h3>
+
+        <% if(profileUser.addresses && profileUser.addresses.length > 0){ %>
+        <ul class="space-y-3 mb-8">
+          <% profileUser.addresses.forEach(a => { %>
+          <li class="flex items-start justify-between bg-gray-50 rounded-xl p-4">
+            <div>
+              <p class="font-semibold text-sm"><%= a.label %></p>
+              <p class="text-gray-600 text-sm mt-0.5"><%= a.address %></p>
+            </div>
+            <form action="/customer/addresses/delete" method="post" class="ml-4 flex-shrink-0">
+              <input type="hidden" name="addressId" value="<%= a._id %>" />
+              <button
+                type="submit"
+                class="text-gray-400 hover:text-red-500 text-xs font-medium transition-colors"
+              >
+                Remove
+              </button>
+            </form>
+          </li>
+          <% }) %>
+        </ul>
+        <% } else { %>
+        <p class="text-gray-400 text-sm mb-8">No saved addresses yet.</p>
+        <% } %>
+
+        <!-- Add address form -->
+        <div class="bg-gray-50 rounded-xl p-6">
+          <h4 class="font-bold mb-4">Add New Address</h4>
+          <form action="/customer/addresses" method="post" class="space-y-3">
+            <input
+              type="text"
+              name="label"
+              placeholder="Label (e.g. Home, Work)"
+              required
+              class="border border-gray-300 p-2 w-full rounded-full text-sm focus:outline-none focus:border-orange-400"
+            />
+            <input
+              type="text"
+              name="address"
+              placeholder="Full delivery address"
+              required
+              class="border border-gray-300 p-2 w-full rounded-full text-sm focus:outline-none focus:border-orange-400"
+            />
+            <button
+              type="submit"
+              class="btn-primary px-6 py-2 rounded-full text-white font-bold text-sm"
+            >
+              Save Address
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>

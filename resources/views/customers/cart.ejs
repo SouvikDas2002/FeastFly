@@ -1,75 +1,370 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&family=Lato:ital,wght@0,400;0,700;1,400;1,900&family=Lora:ital,wght@1,400;1,500;1,600&family=Urbanist:wght@100&family=Varela&family=Varela+Round&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="/css/app.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FeastFly | Your Cart</title>
+    <meta
+      name="description"
+      content="Review the items in your cart and place your order with FeastFly."
+    />
+    <meta name="theme-color" content="#FE5F1E" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&family=Lato:ital,wght@0,400;0,700;1,400;1,900&family=Lora:ital,wght@1,400;1,500;1,600&family=Urbanist:wght@100&family=Varela&family=Varela+Round&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      integrity="sha512-wnea99uKIC3TJF7v4eKk4Y+lMz2Mklv18+r4na2Gn1abDRPPOeef95xTzdwGD9e6zXJBteMIhZ1+68QC5byJZw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/css/app.css" />
+    <style>
+      .qty-btn {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        border: 1.5px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .qty-btn:hover {
+        background: #fe5f1e;
+        color: #fff;
+        border-color: #fe5f1e;
+      }
+      .remove-btn {
+        cursor: pointer;
+        color: #ccc;
+        transition: color 0.2s;
+      }
+      .remove-btn:hover {
+        color: #e53e3e;
+      }
+      .payment-tab {
+        padding: 0.5rem 1.25rem;
+        border-radius: 9999px;
+        border: 1.5px solid #ccc;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .payment-tab.active {
+        background: #fe5f1e;
+        color: #fff;
+        border-color: #fe5f1e;
+      }
+    </style>
+  </head>
+  <body>
     <%- include("../layout.ejs") %>
 
     <section class="cart py-16">
-        <% if(!session.cart){%>
-    <div class="empty-cart py-16">
+      <% if(!session.cart){ %>
+      <div class="empty-cart py-16">
         <div class="container mx-auto text-center">
-            <h1 class="text-3xl font-bold mb-2">Cart Empty 🫤</h1>
-            <p class="text-gray-500 text-lg mb-12">You probably haven't ordered any food yet.<br>
-                To Order, go to main page.
-            </p>
-            <img class="w-2/5 mx-auto" src="/img/empty-cart.png" alt="empty-cart" >
-            <a href="/" class="inline-block px-6 py-2 rounded-full btn-primary text-white font-bold mt-12">Go Back</a>
+          <h1 class="text-3xl font-bold mb-2">Cart Empty 🫤</h1>
+          <p class="text-gray-500 text-lg mb-12">
+            You probably haven't ordered any food yet.<br />
+            To Order, go to main page.
+          </p>
+          <img class="w-2/5 mx-auto" src="/img/empty-cart.png" alt="empty-cart" />
+          <a
+            href="/"
+            class="inline-block px-6 py-2 rounded-full btn-primary text-white font-bold mt-12"
+            >Go Back</a
+          >
         </div>
-    </div>
-<% }else{ %>
-    <div class="order container mx-auto w-full xl:w-1/2">
+      </div>
+      <% } else { %>
+      <div class="order container mx-auto w-full xl:w-1/2">
         <div class="flex items-center border-b border-gray-300 pb-4">
-            <img src="/img/cary-black.png" alt="">
-            <h1 class="font-bold ml-4 text-2xl">Order summury</h1>
+          <h1 class="font-bold text-2xl">Order Summary</h1>
         </div>
-        
-        <div class="pizza-list">
-            <% for(let food of Object.values(session.cart.items)){%>
-                <div class="flex items-center my-8">
-                    <img class="w-24" src="/img/<%= food.item.image %>" alt="">
-                    <div class="flex-1 ml-4">
-                        <h1><%= food.item.name %></h1>
-                        <span><%= food.item.size %></span>
-                        
-                    </div>
-                    <span class="flex-1"><%= food.qty %> Pcs</span>
-                    <span class="font-bold text-lg">₹<%= food.item.price*food.qty %></span>
-                    
-                </div>
-                <% } %>
-            <hr>
-            <div class="text-right py-4">
-                <div>
-                    <span class="text-lg font-bold">Total Amount: </span>
-                    <span class="amount text-2xl font-bold ml-2">₹<%=session.cart.totalPrice%></span>
-                </div>
-                <div>
-                    <form action="/orders" method="post" class="mt-12">
-                        <input class="border border-gray-400 p-2 w-1/2 mb-4 rounded-full" type="text" name="number" placeholder="Phone Number">
-                        <input class="border border-gray-400 p-2 w-1/2 rounded-full" type="text" name="address" placeholder="Address">
-                        <div>
-                            <% if(user){ %>
-                        <button class="btn-primary px-6 py-2 rounded-full text-white font-bold mt-6" type="submit">Order Now</button>
-                        <% } %>
-                        </div>
-                    </form>
-                </div>
-                <% if(!user) {%>
-                <a href="/login" class="inline-block cursor-pointer btn-primary px-6 py-2 rounded-full text-white font-bold mt-5">Login to Continue</a>
-                    <% } %>
+
+        <!-- Item list -->
+        <div class="pizza-list" id="item-list">
+          <% for(let food of Object.values(session.cart.items)){ %>
+          <div class="cart-item flex items-center my-6 gap-4" data-id="<%= food.item._id %>">
+            <img class="w-20 flex-shrink-0" src="/img/<%= food.item.image %>" alt="" />
+            <div class="flex-1">
+              <p class="font-semibold"><%= food.item.name %></p>
+              <span class="text-xs text-gray-500 uppercase"><%= food.item.size %></span>
             </div>
+            <!-- Qty controls -->
+            <div class="flex items-center gap-2">
+              <button
+                class="qty-btn decrement-btn"
+                data-id="<%= food.item._id %>"
+                data-price="<%= food.item.price %>"
+              >
+                −
+              </button>
+              <span class="qty-count w-6 text-center font-bold"><%= food.qty %></span>
+              <button
+                class="qty-btn increment-btn"
+                data-item="<%= JSON.stringify(food.item) %>"
+                data-price="<%= food.item.price %>"
+              >
+                +
+              </button>
+            </div>
+            <span class="font-bold text-lg item-subtotal w-20 text-right"
+              >₹<%= food.item.price * food.qty %></span
+            >
+            <button class="remove-btn text-xl" data-id="<%= food.item._id %>">🗑</button>
+          </div>
+          <% } %>
         </div>
-    </div>
-    <% } %>
+
+        <hr />
+
+        <!-- Total -->
+        <div class="text-right py-4">
+          <span class="text-lg font-bold">Total: </span>
+          <span id="cart-total" class="text-2xl font-bold ml-2"
+            >₹<%= session.cart.totalPrice %></span
+          >
+        </div>
+
+        <% if(user){ %>
+        <!-- Checkout form -->
+        <div class="checkout mt-4 space-y-4">
+          <!-- Saved addresses -->
+          <% if(typeof addresses !== 'undefined' && addresses.length > 0){ %>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Saved Addresses</label>
+            <select
+              id="saved-address-select"
+              class="border border-gray-300 rounded-full p-2 w-full"
+            >
+              <option value="">— Type a new address —</option>
+              <% addresses.forEach(a => { %>
+              <option value="<%= a.address %>"><%= a.label %> — <%= a.address %></option>
+              <% }) %>
+            </select>
+          </div>
+          <% } %>
+
+          <input
+            id="phone-input"
+            class="border border-gray-400 p-2 w-full rounded-full"
+            type="text"
+            placeholder="Phone Number"
+            required
+          />
+          <input
+            id="address-input"
+            class="border border-gray-400 p-2 w-full rounded-full"
+            type="text"
+            placeholder="Delivery Address"
+            required
+          />
+
+          <!-- Payment method tabs -->
+          <div class="flex gap-3 pt-2">
+            <button id="tab-cod" class="payment-tab active" type="button">Cash on Delivery</button>
+            <button id="tab-online" class="payment-tab" type="button">Pay Online</button>
+          </div>
+
+          <!-- Hidden COD form -->
+          <form id="cod-form" action="/orders" method="post" class="hidden">
+            <input type="hidden" name="number" id="cod-number" />
+            <input type="hidden" name="address" id="cod-address" />
+          </form>
+
+          <button
+            id="place-order-btn"
+            class="btn-primary px-6 py-2 rounded-full text-white font-bold mt-2"
+          >
+            Place Order
+          </button>
+
+          <div class="mt-2">
+            <a href="/customer/profile" class="text-sm text-gray-500 underline"
+              >Manage saved addresses</a
+            >
+          </div>
+        </div>
+        <% } else { %>
+        <a
+          href="/login"
+          class="inline-block cursor-pointer btn-primary px-6 py-2 rounded-full text-white font-bold mt-5"
+          >Login to Continue</a
+        >
+        <% } %>
+      </div>
+      <% } %>
     </section>
-    
-</body>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      const cartTotal = document.getElementById('cart-total');
+      const cartCounter = document.getElementById('cartCounter');
+
+      function updateTotalDisplay(totalQty, totalPrice) {
+        if (cartCounter) cartCounter.innerText = totalQty;
+        if (cartTotal) cartTotal.innerText = '₹' + totalPrice;
+      }
+
+      // Qty increment
+      document.querySelectorAll('.increment-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const itemData = JSON.parse(btn.dataset.item);
+          itemData.type = 'add';
+          const res = await axios.post('/update-cart', itemData);
+          const row = btn.closest('.cart-item');
+          const qtyEl = row.querySelector('.qty-count');
+          const subtotalEl = row.querySelector('.item-subtotal');
+          const price = parseInt(btn.dataset.price);
+          const newQty = parseInt(qtyEl.innerText) + 1;
+          qtyEl.innerText = newQty;
+          subtotalEl.innerText = '₹' + price * newQty;
+          if (cartCounter) cartCounter.innerText = res.data.totalQty;
+          recalcTotal();
+        });
+      });
+
+      // Qty decrement
+      document.querySelectorAll('.decrement-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const price = parseInt(btn.dataset.price);
+          const row = btn.closest('.cart-item');
+          const qtyEl = row.querySelector('.qty-count');
+          const currentQty = parseInt(qtyEl.innerText);
+          if (currentQty <= 1) {
+            await removeItem(id, row);
+            return;
+          }
+          const res = await axios.post('/update-cart', { _id: id, price, type: 'decrement' });
+          const newQty = currentQty - 1;
+          qtyEl.innerText = newQty;
+          row.querySelector('.item-subtotal').innerText = '₹' + price * newQty;
+          if (cartCounter) cartCounter.innerText = res.data.totalQty;
+          recalcTotal();
+        });
+      });
+
+      // Remove item
+      document.querySelectorAll('.remove-btn').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const row = btn.closest('.cart-item');
+          await removeItem(id, row);
+        });
+      });
+
+      async function removeItem(id, row) {
+        const res = await axios.post('/remove-from-cart', { _id: id });
+        row.remove();
+        if (cartCounter) cartCounter.innerText = res.data.totalQty;
+        recalcTotal();
+        if (res.data.totalQty === 0) location.reload();
+      }
+
+      function recalcTotal() {
+        let total = 0;
+        document.querySelectorAll('.item-subtotal').forEach((el) => {
+          total += parseInt(el.innerText.replace('₹', ''));
+        });
+        if (cartTotal) cartTotal.innerText = '₹' + total;
+      }
+
+      // Saved address selector
+      const savedSelect = document.getElementById('saved-address-select');
+      const addressInput = document.getElementById('address-input');
+      if (savedSelect && addressInput) {
+        savedSelect.addEventListener('change', () => {
+          if (savedSelect.value) addressInput.value = savedSelect.value;
+        });
+      }
+
+      // Payment tabs
+      const tabCod = document.getElementById('tab-cod');
+      const tabOnline = document.getElementById('tab-online');
+      let paymentMethod = 'cod';
+
+      if (tabCod && tabOnline) {
+        tabCod.addEventListener('click', () => {
+          paymentMethod = 'cod';
+          tabCod.classList.add('active');
+          tabOnline.classList.remove('active');
+        });
+        tabOnline.addEventListener('click', () => {
+          paymentMethod = 'online';
+          tabOnline.classList.add('active');
+          tabCod.classList.remove('active');
+        });
+      }
+
+      // Place order
+      const placeBtn = document.getElementById('place-order-btn');
+      if (placeBtn) {
+        placeBtn.addEventListener('click', async () => {
+          const phone = document.getElementById('phone-input').value.trim();
+          const address = document.getElementById('address-input').value.trim();
+          if (!phone || !address) {
+            alert('Please enter your phone number and delivery address.');
+            return;
+          }
+
+          if (paymentMethod === 'cod') {
+            document.getElementById('cod-number').value = phone;
+            document.getElementById('cod-address').value = address;
+            document.getElementById('cod-form').submit();
+          } else {
+            placeBtn.disabled = true;
+            placeBtn.innerText = 'Processing…';
+            try {
+              const { data } = await axios.post('/payment/create-order');
+              const options = {
+                key: data.key,
+                amount: data.amount,
+                currency: data.currency,
+                name: 'FeastFly',
+                description: 'Food Order Payment',
+                order_id: data.razorpayOrderId,
+                handler: async (response) => {
+                  const verify = await axios.post('/payment/verify', {
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature,
+                    phone,
+                    address,
+                  });
+                  if (verify.data.success) {
+                    window.location.href = '/customer/order/' + verify.data.orderId;
+                  }
+                },
+                prefill: { contact: phone },
+                theme: { color: '#FE5F1E' },
+                modal: {
+                  ondismiss: () => {
+                    placeBtn.disabled = false;
+                    placeBtn.innerText = 'Place Order';
+                  },
+                },
+              };
+              const rzp = new Razorpay(options);
+              rzp.open();
+            } catch (err) {
+              alert('Could not initiate payment. Please try again.');
+              placeBtn.disabled = false;
+              placeBtn.innerText = 'Place Order';
+            }
+          }
+        });
+      }
+    </script>
+  </body>
 </html>
