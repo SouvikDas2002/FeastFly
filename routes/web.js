@@ -13,6 +13,7 @@ const passport = require('passport');
 
 const routeGateWay = (app) => {
   app.get('/', homeController().index);
+  app.get('/offers', homeController().offers);
 
   app.get('/login', guest, authController().login);
   app.post('/login', authController().postLogin);

@@ -3,17 +3,17 @@ body {
   color: #232323;
 }
 
-nav li:last-child a {
+#top-nav li:last-child a {
   background: #FE5F1E;
 }
-nav li:last-child a:hover {
+#top-nav li:last-child a:hover {
   background: #b23301;
 }
 
-nav li a {
+#top-nav li a {
   transition: all 0.3s ease-in-out;
 }
-nav li a:hover {
+#top-nav li a:hover {
   color: #FE5F1E;
 }
 

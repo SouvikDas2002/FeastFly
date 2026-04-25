@@ -5,18 +5,14 @@ body {
   color: $dark;
 }
 
-nav li:last-child a {
+#top-nav li:last-child a {
   background: $primary;
   &:hover {
     background: $primary-hover;
   }
 }
 
-// nav li a:hover{
-
-// }
-
-nav li a {
+#top-nav li a {
   transition: all 0.3s ease-in-out;
   &:hover {
     color: $primary;
