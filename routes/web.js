@@ -1,6 +1,7 @@
 const homeController = require('../app/http/controllers/homeController');
 const authController = require('../app/http/controllers/authController');
 const cartController = require('../app/http/controllers/customers/cartController');
+const couponController = require('../app/http/controllers/customers/couponController');
 const orderController = require('../app/http/controllers/customers/orderController');
 const paymentController = require('../app/http/controllers/customers/paymentController');
 const profileController = require('../app/http/controllers/customers/profileController');
@@ -38,6 +39,9 @@ const routeGateWay = (app) => {
   app.post('/remove-from-cart', cartController().remove);
 
   app.post('/logout', authController().logout);
+
+  app.post('/apply-coupon', auth, couponController().apply);
+  app.post('/remove-coupon', auth, couponController().remove);
 
   app.post('/orders', auth, orderController().store);
   app.get('/customer/order', auth, orderController().index);

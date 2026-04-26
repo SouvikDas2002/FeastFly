@@ -207,6 +207,15 @@
             <option value="asc">Price: Low → High</option>
             <option value="desc">Price: High → Low</option>
           </select>
+          <div class="flex gap-1">
+            <button id="veg-all"     class="veg-pill active-veg flex items-center gap-1.5 border border-gray-300 rounded-full px-3 py-1.5 text-sm font-medium focus:outline-none">All</button>
+            <button id="veg-veg"     class="veg-pill flex items-center gap-1.5 border border-gray-300 rounded-full px-3 py-1.5 text-sm font-medium focus:outline-none">
+              <span class="w-3 h-3 rounded-sm border-2 border-green-600 flex items-center justify-center flex-shrink-0"><span class="w-1.5 h-1.5 rounded-sm bg-green-600"></span></span>Veg
+            </button>
+            <button id="veg-nonveg"  class="veg-pill flex items-center gap-1.5 border border-gray-300 rounded-full px-3 py-1.5 text-sm font-medium focus:outline-none">
+              <span class="w-3 h-3 rounded-sm border-2 border-red-600 flex items-center justify-center flex-shrink-0"><span class="w-1.5 h-1.5 rounded-sm bg-red-600"></span></span>Non-Veg
+            </button>
+          </div>
         </div>
         <span id="no-results" class="text-gray-400 text-sm hidden mt-2 block"
           >No items match your search.</span
@@ -215,18 +224,19 @@
 
       <div
         id="menu-grid"
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-x-6 md:gap-y-12"
+        class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-x-6 md:gap-y-12"
       >
         <% allItems.forEach((item)=>{ %> <% const available = item.isAvailable !== false; %>
         <div
-          class="item-card relative flex sm:block items-center gap-4 bg-white sm:bg-transparent rounded-xl sm:rounded-none shadow-sm sm:shadow-none p-3 sm:p-0 <%= !available ? 'opacity-60' : '' %>"
+          class="item-card relative block rounded-xl sm:rounded-none shadow-sm sm:shadow-none bg-white sm:bg-transparent p-2 sm:p-0 <%= !available ? 'opacity-60' : '' %>"
           data-name="<%= item.name.toLowerCase() %>"
           data-size="<%= item.size.toLowerCase() %>"
           data-price="<%= item.price %>"
           data-category="<%= (item.category || 'other').toLowerCase() %>"
+          data-veg="<%= item.isVeg === false ? 'non-veg' : 'veg' %>"
         >
-          <!-- Image wrapper — fixed size on mobile, full-width on sm+ -->
-          <div class="relative flex-shrink-0 w-24 h-24 sm:w-full sm:h-40 sm:mb-4">
+          <!-- Image wrapper -->
+          <div class="relative w-full h-32 sm:h-40 mb-2 sm:mb-4">
             <!-- Veg / Non-veg dot -->
             <div
               class="absolute top-1 left-1 z-10 w-4 h-4 rounded border-2 <%= item.isVeg === false ? 'border-red-600' : 'border-green-600' %> flex items-center justify-center bg-white"
@@ -255,11 +265,11 @@
           </div>
 
           <!-- Content -->
-          <div class="flex-1 min-w-0 sm:text-center">
+          <div class="text-center">
             <!-- Bestseller badge: inline on mobile, absolute on sm+ -->
             <% if (item.isPopular) { %>
             <span
-              class="inline-block sm:absolute sm:top-2 sm:right-2 mb-1 sm:mb-0 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold"
+              class="absolute top-2 right-2 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full font-semibold"
               >&#9733; Bestseller</span
             >
             <% } %>
@@ -347,6 +357,11 @@
         opacity: 0.35;
         cursor: not-allowed;
       }
+      .veg-pill.active-veg {
+        background: #fff3ee;
+        border-color: #FE5F1E;
+        color: #FE5F1E;
+      }
       .pg-dots {
         color: #9ca3af;
         font-size: 0.875rem;
@@ -363,6 +378,7 @@
       var paginationEl = document.getElementById('pagination');
 
       var activeCategory = 'all';
+      var activeVeg      = 'all';
       var currentPage    = 1;
       var matchingCards  = [];
 
@@ -381,7 +397,8 @@
         document.querySelectorAll('.item-card').forEach(function (card) {
           var nameMatch = !query || card.dataset.name.includes(query);
           var catMatch  = activeCategory === 'all' || card.dataset.category === activeCategory;
-          if (nameMatch && catMatch) matchingCards.push(card);
+          var vegMatch  = activeVeg === 'all' || card.dataset.veg === activeVeg;
+          if (nameMatch && catMatch && vegMatch) matchingCards.push(card);
         });
 
         currentPage = 1;
@@ -472,6 +489,15 @@
         });
         all.forEach(function (c) { menuGrid.appendChild(c); });
         applyFilters();
+      });
+
+      document.querySelectorAll('.veg-pill').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.querySelectorAll('.veg-pill').forEach(function (b) { b.classList.remove('active-veg'); });
+          btn.classList.add('active-veg');
+          activeVeg = btn.id === 'veg-veg' ? 'veg' : btn.id === 'veg-nonveg' ? 'non-veg' : 'all';
+          applyFilters();
+        });
       });
 
       searchInput.addEventListener('input', applyFilters);
