@@ -3,11 +3,20 @@
 const addToCart = document.getElementsByClassName('add-to-cart');
 
 const cartCounter = document.getElementById('cartCounter');
+const mobileCartCounter = document.getElementById('mobileCartCounter');
+
+function syncCartCounters(qty) {
+  if (cartCounter) cartCounter.innerText = qty;
+  if (mobileCartCounter) {
+    mobileCartCounter.innerText = qty > 0 ? qty : '';
+    mobileCartCounter.style.display = qty > 0 ? 'flex' : 'none';
+  }
+}
 
 const updateCart = async (item) => {
   // console.log(cartItem);
   const cartItem = await axios.post('/update-cart', item);
-  cartCounter.innerText = cartItem.data.totalQty;
+  syncCartCounters(cartItem.data.totalQty);
   Toastify({
     text: `${cartItem.data.totalQty} added to your cart`,
     duration: 2000,

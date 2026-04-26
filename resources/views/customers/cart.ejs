@@ -127,12 +127,53 @@
 
         <hr />
 
+        <!-- Coupon -->
+        <% if(user){ %>
+        <div class="mt-4 mb-1">
+          <!-- Input row (hidden when a coupon is already applied) -->
+          <div id="coupon-input-row" class="flex gap-2 <%= session.cart.coupon ? 'hidden' : '' %>">
+            <input
+              id="coupon-input"
+              type="text"
+              placeholder="Have a coupon? Enter code"
+              class="border border-gray-300 rounded-full px-4 py-2 text-sm flex-1 focus:outline-none focus:border-orange-400"
+              style="text-transform:uppercase"
+            />
+            <button id="apply-coupon-btn" class="btn-primary px-5 py-2 rounded-full text-white text-sm font-bold whitespace-nowrap">
+              Apply
+            </button>
+          </div>
+          <p id="coupon-msg" class="text-xs mt-1.5 hidden"></p>
+
+          <!-- Applied badge (hidden when no coupon) -->
+          <div id="coupon-applied-row" class="<%= session.cart.coupon ? '' : 'hidden' %> flex items-center justify-between bg-green-50 border border-green-200 rounded-2xl px-4 py-3">
+            <div>
+              <span class="text-green-700 font-bold text-sm">
+                🏷️ <span id="coupon-code-display"><%= session.cart.coupon ? session.cart.coupon.code : '' %></span> applied
+              </span>
+              <span class="text-green-600 text-sm ml-2 font-semibold">
+                −₹<span id="coupon-discount-display"><%= session.cart.coupon ? session.cart.coupon.discount : 0 %></span>
+              </span>
+            </div>
+            <button id="remove-coupon-btn" class="text-gray-400 hover:text-red-500 text-xs font-semibold ml-4 transition-colors">
+              ✕ Remove
+            </button>
+          </div>
+        </div>
+        <% } %>
+
         <!-- Total -->
         <div class="text-right py-4">
+          <div id="subtotal-line" class="text-gray-500 text-sm mb-1 <%= session.cart.coupon ? '' : 'hidden' %>">
+            Subtotal: ₹<span id="subtotal-amount"><%= session.cart.totalPrice %></span>
+          </div>
+          <div id="discount-line" class="text-green-600 font-semibold text-sm mb-1 <%= session.cart.coupon ? '' : 'hidden' %>">
+            Discount: −₹<span id="discount-amount"><%= session.cart.coupon ? session.cart.coupon.discount : 0 %></span>
+          </div>
           <span class="text-lg font-bold">Total: </span>
-          <span id="cart-total" class="text-2xl font-bold ml-2"
-            >₹<%= session.cart.totalPrice %></span
-          >
+          <span id="cart-total" class="text-2xl font-bold ml-2">
+            ₹<%= session.cart.coupon ? session.cart.coupon.finalTotal : session.cart.totalPrice %>
+          </span>
         </div>
 
         <% if(user){ %>
@@ -208,17 +249,61 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
-      const cartTotal = document.getElementById('cart-total');
-      const cartCounter = document.getElementById('cartCounter');
+      const cartTotal         = document.getElementById('cart-total');
+      const cartCounter       = document.getElementById('cartCounter');
+      const mobileCartCounter = document.getElementById('mobileCartCounter');
 
-      function updateTotalDisplay(totalQty, totalPrice) {
-        if (cartCounter) cartCounter.innerText = totalQty;
-        if (cartTotal) cartTotal.innerText = '₹' + totalPrice;
+      function syncCartCounters(qty) {
+        if (cartCounter) cartCounter.innerText = qty;
+        if (mobileCartCounter) {
+          mobileCartCounter.innerText = qty > 0 ? qty : '';
+          mobileCartCounter.style.display = qty > 0 ? 'flex' : 'none';
+        }
+      }
+      const subtotalLine = document.getElementById('subtotal-line');
+      const discountLine = document.getElementById('discount-line');
+      const subtotalAmountEl  = document.getElementById('subtotal-amount');
+      const discountAmountEl  = document.getElementById('discount-amount');
+      const couponInputRow    = document.getElementById('coupon-input-row');
+      const couponAppliedRow  = document.getElementById('coupon-applied-row');
+      const couponCodeDisplay = document.getElementById('coupon-code-display');
+      const couponDiscDisplay = document.getElementById('coupon-discount-display');
+
+      var appliedDiscount = <%= session.cart && session.cart.coupon ? session.cart.coupon.discount : 0 %>;
+
+      function recalcTotal() {
+        let subtotal = 0;
+        document.querySelectorAll('.item-subtotal').forEach((el) => {
+          subtotal += parseInt(el.innerText.replace('₹', '')) || 0;
+        });
+        if (appliedDiscount > 0) {
+          const eff   = Math.min(appliedDiscount, subtotal);
+          const final = subtotal - eff;
+          if (subtotalLine)    subtotalLine.classList.remove('hidden');
+          if (subtotalAmountEl) subtotalAmountEl.innerText = subtotal;
+          if (discountLine)    discountLine.classList.remove('hidden');
+          if (discountAmountEl) discountAmountEl.innerText = eff;
+          if (cartTotal)       cartTotal.innerText = '₹' + final;
+        } else {
+          if (subtotalLine) subtotalLine.classList.add('hidden');
+          if (discountLine) discountLine.classList.add('hidden');
+          if (cartTotal)    cartTotal.innerText = '₹' + subtotal;
+        }
+      }
+
+      async function clearCouponUI() {
+        if (appliedDiscount === 0) return;
+        appliedDiscount = 0;
+        try { await axios.post('/remove-coupon'); } catch (_) {}
+        if (couponAppliedRow) couponAppliedRow.classList.add('hidden');
+        if (couponInputRow)   couponInputRow.classList.remove('hidden');
+        recalcTotal();
       }
 
       // Qty increment
       document.querySelectorAll('.increment-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
+          await clearCouponUI();
           const itemData = JSON.parse(btn.dataset.item);
           itemData.type = 'add';
           const res = await axios.post('/update-cart', itemData);
@@ -229,7 +314,7 @@
           const newQty = parseInt(qtyEl.innerText) + 1;
           qtyEl.innerText = newQty;
           subtotalEl.innerText = '₹' + price * newQty;
-          if (cartCounter) cartCounter.innerText = res.data.totalQty;
+          syncCartCounters(res.data.totalQty);
           recalcTotal();
         });
       });
@@ -246,11 +331,12 @@
             await removeItem(id, row);
             return;
           }
+          await clearCouponUI();
           const res = await axios.post('/update-cart', { _id: id, price, type: 'decrement' });
           const newQty = currentQty - 1;
           qtyEl.innerText = newQty;
           row.querySelector('.item-subtotal').innerText = '₹' + price * newQty;
-          if (cartCounter) cartCounter.innerText = res.data.totalQty;
+          syncCartCounters(res.data.totalQty);
           recalcTotal();
         });
       });
@@ -258,13 +344,12 @@
       // Remove item
       document.querySelectorAll('.remove-btn').forEach((btn) => {
         btn.addEventListener('click', async () => {
-          const id = btn.dataset.id;
-          const row = btn.closest('.cart-item');
-          await removeItem(id, row);
+          await removeItem(btn.dataset.id, btn.closest('.cart-item'));
         });
       });
 
       async function removeItem(id, row) {
+        await clearCouponUI();
         const res = await axios.post('/remove-from-cart', { _id: id });
         row.remove();
         if (cartCounter) cartCounter.innerText = res.data.totalQty;
@@ -272,12 +357,50 @@
         if (res.data.totalQty === 0) location.reload();
       }
 
-      function recalcTotal() {
-        let total = 0;
-        document.querySelectorAll('.item-subtotal').forEach((el) => {
-          total += parseInt(el.innerText.replace('₹', ''));
+      // Apply coupon
+      const applyCouponBtn = document.getElementById('apply-coupon-btn');
+      const couponInput    = document.getElementById('coupon-input');
+      const couponMsg      = document.getElementById('coupon-msg');
+
+      if (applyCouponBtn && couponInput) {
+        applyCouponBtn.addEventListener('click', async () => {
+          const code = couponInput.value.trim();
+          if (!code) return;
+          applyCouponBtn.disabled = true;
+          applyCouponBtn.innerText = '...';
+          couponMsg.classList.add('hidden');
+          try {
+            const { data } = await axios.post('/apply-coupon', { code });
+            if (data.error) {
+              couponMsg.textContent = data.error;
+              couponMsg.className = 'text-xs mt-1.5 text-red-500';
+              couponMsg.classList.remove('hidden');
+            } else {
+              appliedDiscount = data.discount;
+              if (couponCodeDisplay) couponCodeDisplay.innerText = data.code;
+              if (couponDiscDisplay) couponDiscDisplay.innerText = data.discount;
+              if (couponInputRow)   couponInputRow.classList.add('hidden');
+              if (couponAppliedRow) couponAppliedRow.classList.remove('hidden');
+              recalcTotal();
+            }
+          } catch (_) {
+            couponMsg.textContent = 'Something went wrong. Please try again.';
+            couponMsg.className = 'text-xs mt-1.5 text-red-500';
+            couponMsg.classList.remove('hidden');
+          }
+          applyCouponBtn.disabled = false;
+          applyCouponBtn.innerText = 'Apply';
         });
-        if (cartTotal) cartTotal.innerText = '₹' + total;
+
+        couponInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') applyCouponBtn.click();
+        });
+      }
+
+      // Remove coupon
+      const removeCouponBtn = document.getElementById('remove-coupon-btn');
+      if (removeCouponBtn) {
+        removeCouponBtn.addEventListener('click', () => clearCouponUI());
       }
 
       // Saved address selector
