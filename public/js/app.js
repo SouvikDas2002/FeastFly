@@ -20,6 +20,14 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 var addToCart = document.getElementsByClassName('add-to-cart');
 var cartCounter = document.getElementById("cartCounter");
+var mobileCartCounter = document.getElementById("mobileCartCounter");
+function syncCartCounters(qty) {
+  if (cartCounter) cartCounter.innerText = qty;
+  if (mobileCartCounter) {
+    mobileCartCounter.innerText = qty > 0 ? qty : '';
+    mobileCartCounter.style.display = qty > 0 ? 'flex' : 'none';
+  }
+}
 var updateCart = /*#__PURE__*/function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(item) {
     var cartItem;
@@ -30,7 +38,7 @@ var updateCart = /*#__PURE__*/function () {
           return axios.post('/update-cart', item);
         case 2:
           cartItem = _context.sent;
-          cartCounter.innerText = cartItem.data.totalQty;
+          syncCartCounters(cartItem.data.totalQty);
           Toastify({
             text: "".concat(cartItem.data.totalQty, " added to your cart"),
             duration: 2000,

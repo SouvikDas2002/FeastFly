@@ -17,6 +17,8 @@ const orderController = () => {
         (sum, { item, qty }) => sum + parseInt(item.price) * qty,
         0
       );
+      const discountAmount = cart.coupon ? cart.coupon.discount : 0;
+      const finalAmount = totalAmount - discountAmount;
 
       const order = new Order({
         customerId: req.user._id,
@@ -24,6 +26,9 @@ const orderController = () => {
         phone: number,
         address,
         totalAmount,
+        discountAmount,
+        finalAmount,
+        couponCode: cart.coupon ? cart.coupon.code : undefined,
       });
 
       const confirmOrder = await order.save();

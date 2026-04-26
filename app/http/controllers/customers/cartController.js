@@ -40,6 +40,7 @@ const cartController = () => {
         cart.totalPrice += parseInt(price);
       }
 
+      delete cart.coupon;
       return res.json({ totalQty: req.session.cart.totalQty });
     },
 
@@ -55,6 +56,8 @@ const cartController = () => {
       }
       if (Object.keys(cart.items).length === 0) {
         delete req.session.cart;
+      } else {
+        delete cart.coupon;
       }
       return res.json({ totalQty: req.session.cart ? req.session.cart.totalQty : 0 });
     },

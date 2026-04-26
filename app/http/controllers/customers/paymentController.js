@@ -30,13 +30,21 @@ const paymentController = () => {
         totalAmount += price * entry.qty;
       });
 
+      const discountAmount = cart.coupon ? cart.coupon.discount : 0;
+      const finalAmount = totalAmount - discountAmount;
+
       const razorpayOrder = await razorpay.orders.create({
-        amount: totalAmount * 100,
+        amount: finalAmount * 100,
         currency: 'INR',
         receipt: `ff_${Date.now()}`,
       });
 
-      req.session.pendingPayment = { razorpayOrderId: razorpayOrder.id, totalAmount };
+      req.session.pendingPayment = {
+        razorpayOrderId: razorpayOrder.id,
+        totalAmount,
+        discountAmount,
+        finalAmount,
+      };
 
       return res.json({
         razorpayOrderId: razorpayOrder.id,
@@ -65,6 +73,9 @@ const paymentController = () => {
         phone,
         address,
         totalAmount: pending.totalAmount,
+        discountAmount: pending.discountAmount || 0,
+        finalAmount: pending.finalAmount || pending.totalAmount,
+        couponCode: req.session.cart.coupon ? req.session.cart.coupon.code : undefined,
         paymentType: 'online',
         paymentStatus: 'paid',
         paymentOrderId: razorpay_order_id,
