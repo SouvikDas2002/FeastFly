@@ -45,6 +45,7 @@ const routeGateWay = (app) => {
 
   app.post('/orders', auth, orderController().store);
   app.get('/customer/order', auth, orderController().index);
+  app.get('/customer/orders/more', auth, orderController().more);
   app.get('/customer/order/:id', auth, orderController().show);
 
   // Payment routes

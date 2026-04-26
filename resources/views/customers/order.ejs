@@ -9,7 +9,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&family=Lato:ital,wght@0,400;0,700;1,400;1,900&family=Lora:ital,wght@1,400;1,500;1,600&family=Urbanist:wght@100&family=Varela&family=Varela+Round&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;300;400;500;600;700&family=Lato:ital,wght@0,400;0,700;1,400;1,900&display=swap"
       rel="stylesheet"
     />
     <link
@@ -23,107 +23,201 @@
   </head>
   <body>
     <%- include('../layout.ejs') %>
-    <section class="orders light-section mt-6 px-4 md:px-10" style="min-height: 70vh">
-      <div class="container mx-auto pt-8">
-        <h1 class="font-bold text-lg mb-4">All orders</h1>
-        <% if(messages.success) { %>
-        <div
-          id="success-alert"
-          class="flex items-center bg-green-500 text-white text-sm font-bold px-4 py-3"
-          role="alert"
-        >
-          <svg
-            class="fill-current w-4 h-4 mr-2"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <path
-              d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z"
-            />
-          </svg>
-          <p><%= messages.success %></p>
+
+    <section class="py-8 px-4 md:px-10 pb-24" style="min-height:70vh">
+      <div class="container mx-auto max-w-2xl">
+
+        <h1 class="text-xl font-bold mb-6">My Orders</h1>
+
+        <% if(messages.success){ %>
+        <div id="success-alert" class="bg-green-100 text-green-700 rounded-xl px-4 py-3 mb-5 text-sm font-medium">
+          <%= messages.success %>
         </div>
         <% } %>
-        <div class="overflow-x-auto">
-          <table class="w-full table-auto bg-white min-w-max">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left">Orders</th>
-                <th class="px-4 py-2 text-left">Phone</th>
-                <th class="px-4 py-2 text-left">Address</th>
-                <th class="px-4 py-2 text-left">Time</th>
-                <th class="px-4 py-2 text-left">Payment</th>
-                <th class="px-4 py-2 text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <%
-                const statusMap = {
-                  order_placed: { label: 'Order Placed', color: 'bg-blue-100 text-blue-800' },
-                  confirmed: { label: 'Confirmed', color: 'bg-yellow-100 text-yellow-800' },
-                  prepared: { label: 'Preparing', color: 'bg-orange-100 text-orange-800' },
-                  delivered: { label: 'Out for Delivery', color: 'bg-purple-100 text-purple-800' },
-                  completed: { label: 'Completed', color: 'bg-green-100 text-green-800' },
-                };
-              %>
-              <% if (orders.length) { %>
-              <% orders.forEach((order) => { %>
-              <% const s = statusMap[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-800' }; %>
-              <tr>
-                <td class="border px-4 py-2">
-                  <a class="link" href="/customer/order/<%= order._id %>"><%= order._id %></a>
-                </td>
-                <td class="border px-4 py-2"><%= order.phone %></td>
-                <td class="border px-4 py-2"><%= order.address %></td>
-                <td class="border px-4 py-2"><%= moment(order.createdAt).format('hh:mm A') %></td>
-                <td class="border px-4 py-2"><%= order.paymentType %></td>
-                <td class="border px-4 py-2">
-                  <span
-                    id="status-<%= order._id %>"
-                    class="px-2 py-1 rounded-full text-xs font-semibold <%= s.color %>"
-                    ><%= s.label %></span
-                  >
-                </td>
-              </tr>
-              <% }) %> <% } else { %>
-              <tr>
-                <td class="p-4"><span>No orders found!</span></td>
-              </tr>
-              <% } %>
-            </tbody>
-          </table>
+
+        <%
+          const statusMap = {
+            order_placed: { label: 'Order Placed',     color: 'bg-blue-100 text-blue-700'   },
+            confirmed:    { label: 'Confirmed',         color: 'bg-yellow-100 text-yellow-700'},
+            prepared:     { label: 'Preparing',         color: 'bg-orange-100 text-orange-700'},
+            delivered:    { label: 'Out for Delivery',  color: 'bg-purple-100 text-purple-700'},
+            completed:    { label: 'Delivered',         color: 'bg-green-100 text-green-700'  },
+          };
+        %>
+
+        <% if(orders.length){ %>
+        <div class="space-y-4">
+          <% orders.forEach((order) => { %>
+          <%
+            const s        = statusMap[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-700' };
+            const itemList = Object.values(order.items);
+            const paid     = order.finalAmount != null ? order.finalAmount : order.totalAmount;
+          %>
+          <a href="/customer/order/<%= order._id %>" class="block bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow">
+
+            <!-- Top row: order ID + status -->
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <p class="text-xs text-gray-400 font-mono">#<%= order._id.toString().slice(-8).toUpperCase() %></p>
+                <p class="text-xs text-gray-400 mt-0.5"><%= moment(order.createdAt).format('DD MMM YYYY, hh:mm A') %></p>
+              </div>
+              <span id="status-<%= order._id %>" class="px-3 py-1 rounded-full text-xs font-semibold <%= s.color %>">
+                <%= s.label %>
+              </span>
+            </div>
+
+            <!-- All items -->
+            <div class="space-y-2 mb-3">
+              <% itemList.forEach((entry) => { %>
+              <div class="flex items-center gap-3">
+                <img
+                  src="/img/<%= entry.item.image %>"
+                  alt="<%= entry.item.name %>"
+                  class="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                />
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold truncate"><%= entry.item.name %></p>
+                  <p class="text-xs text-gray-400"><%= entry.item.size %> &nbsp;·&nbsp; Qty: <%= entry.qty %></p>
+                </div>
+                <span class="text-sm font-semibold text-gray-700 flex-shrink-0">₹<%= entry.item.price * entry.qty %></span>
+              </div>
+              <% }) %>
+            </div>
+
+            <!-- Bottom row: payment method + amount -->
+            <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+              <span class="text-xs text-gray-500 flex items-center gap-1">
+                <% if(order.paymentType === 'COD'){ %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                Cash on Delivery
+                <% } else { %>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                Paid Online
+                <% } %>
+              </span>
+              <span class="font-bold text-orange-500">₹<%= paid %></span>
+            </div>
+
+          </a>
+          <% }) %>
         </div>
+
+        <% } else { %>
+        <div class="text-center py-20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-200 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <p class="text-gray-400 font-medium">No orders yet</p>
+          <a href="/" class="inline-block mt-4 btn-primary px-6 py-2 rounded-full text-white text-sm font-bold">Browse Menu</a>
+        </div>
+        <% } %>
+
+        <% if(total > limit){ %>
+        <div class="text-center mt-6">
+          <button id="loadMoreBtn" class="px-6 py-2 rounded-full border border-orange-400 text-orange-500 text-sm font-semibold hover:bg-orange-50 transition-colors">
+            Load More
+          </button>
+        </div>
+        <% } %>
+
       </div>
     </section>
-    <input
-      type="hidden"
-      id="orderIdsData"
-      value="<%= JSON.stringify(orders.map(o => o._id.toString())) %>"
-    />
+
+    <input type="hidden" id="orderIdsData" value="<%= JSON.stringify(orders.map(o => o._id.toString())) %>" />
+    <input type="hidden" id="orderTotal" value="<%= total %>" />
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const statusMap = {
-        order_placed: { label: 'Order Placed', color: 'bg-blue-100 text-blue-800' },
-        confirmed: { label: 'Confirmed', color: 'bg-yellow-100 text-yellow-800' },
-        prepared: { label: 'Preparing', color: 'bg-orange-100 text-orange-800' },
-        delivered: { label: 'Out for Delivery', color: 'bg-purple-100 text-purple-800' },
-        completed: { label: 'Completed', color: 'bg-green-100 text-green-800' },
+        order_placed: { label: 'Order Placed',    color: 'bg-blue-100 text-blue-700'    },
+        confirmed:    { label: 'Confirmed',        color: 'bg-yellow-100 text-yellow-700' },
+        prepared:     { label: 'Preparing',        color: 'bg-orange-100 text-orange-700' },
+        delivered:    { label: 'Out for Delivery', color: 'bg-purple-100 text-purple-700' },
+        completed:    { label: 'Delivered',        color: 'bg-green-100 text-green-700'   },
       };
-
-      const socket = io();
+      const socket   = io();
       const orderIds = JSON.parse(document.getElementById('orderIdsData').value);
       orderIds.forEach((id) => socket.emit('join', 'order_' + id));
-
       socket.on('orderUpdated', (data) => {
         const badge = document.getElementById('status-' + data.id);
         if (!badge) return;
-        const s = statusMap[data.status] || {
-          label: data.status,
-          color: 'bg-gray-100 text-gray-800',
-        };
-        badge.className = 'px-2 py-1 rounded-full text-xs font-semibold ' + s.color;
+        const s = statusMap[data.status] || { label: data.status, color: 'bg-gray-100 text-gray-700' };
+        badge.className = 'px-3 py-1 rounded-full text-xs font-semibold ' + s.color;
         badge.textContent = s.label;
       });
+
+      const successAlert = document.getElementById('success-alert');
+      if (successAlert) setTimeout(() => successAlert.remove(), 3000);
+
+      // Load More
+      let currentSkip = <%= limit %>;
+      const totalOrders = parseInt(document.getElementById('orderTotal').value);
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const ordersList  = document.querySelector('.space-y-4');
+
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', async () => {
+          loadMoreBtn.disabled = true;
+          loadMoreBtn.textContent = 'Loading…';
+
+          const res  = await fetch('/customer/orders/more?skip=' + currentSkip);
+          const data = await res.json();
+
+          data.orders.forEach((order) => {
+            const s        = statusMap[order.status] || { label: order.status, color: 'bg-gray-100 text-gray-700' };
+            const itemList = Object.values(order.items);
+            const paid     = order.finalAmount != null ? order.finalAmount : order.totalAmount;
+            const shortId  = order._id.toString().slice(-8).toUpperCase();
+            const date     = new Date(order.createdAt).toLocaleString('en-IN', {
+              day: '2-digit', month: 'short', year: 'numeric',
+              hour: '2-digit', minute: '2-digit', hour12: true,
+            });
+
+            const itemsHtml = itemList.map((entry) => `
+              <div class="flex items-center gap-3">
+                <img src="/img/${entry.item.image}" alt="${entry.item.name}" class="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold truncate">${entry.item.name}</p>
+                  <p class="text-xs text-gray-400">${entry.item.size} &nbsp;·&nbsp; Qty: ${entry.qty}</p>
+                </div>
+                <span class="text-sm font-semibold text-gray-700 flex-shrink-0">₹${entry.item.price * entry.qty}</span>
+              </div>
+            `).join('');
+
+            const paymentIcon = order.paymentType === 'COD'
+              ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg> Cash on Delivery`
+              : `<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg> Paid Online`;
+
+            const card = document.createElement('a');
+            card.href  = '/customer/order/' + order._id;
+            card.id    = 'card-' + order._id;
+            card.className = 'block bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:shadow-md transition-shadow';
+            card.innerHTML = `
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <p class="text-xs text-gray-400 font-mono">#${shortId}</p>
+                  <p class="text-xs text-gray-400 mt-0.5">${date}</p>
+                </div>
+                <span id="status-${order._id}" class="px-3 py-1 rounded-full text-xs font-semibold ${s.color}">${s.label}</span>
+              </div>
+              <div class="space-y-2 mb-3">${itemsHtml}</div>
+              <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                <span class="text-xs text-gray-500 flex items-center gap-1">${paymentIcon}</span>
+                <span class="font-bold text-orange-500">₹${paid}</span>
+              </div>
+            `;
+            ordersList.appendChild(card);
+            socket.emit('join', 'order_' + order._id);
+          });
+
+          currentSkip += data.limit;
+          if (currentSkip >= totalOrders) {
+            loadMoreBtn.parentElement.style.display = 'none';
+          } else {
+            loadMoreBtn.disabled = false;
+            loadMoreBtn.textContent = 'Load More';
+          }
+        });
+      }
     </script>
     <%- include('../partials/footer.ejs') %>
   </body>
