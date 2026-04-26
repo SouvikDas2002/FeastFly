@@ -12,6 +12,8 @@ const userSchema = new mongoose.Schema(
         address: { type: String, required: true },
       },
     ],
+    referralCode: { type: String },
+    credits: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -4,7 +4,16 @@ const profileController = () => {
   return {
     async index(req, res) {
       const userId = req.user._id;
-      const profileUser = await User.findById(userId).select('username email addresses');
+      const profileUser = await User.findById(userId).select(
+        'username email addresses referralCode credits'
+      );
+
+      if (!profileUser.referralCode) {
+        const code = 'FF' + profileUser._id.toString().slice(-6).toUpperCase();
+        await User.findByIdAndUpdate(userId, { referralCode: code });
+        profileUser.referralCode = code;
+      }
+
       res.render('customers/profile', { profileUser });
     },
 

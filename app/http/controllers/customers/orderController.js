@@ -51,17 +51,32 @@ const orderController = () => {
     },
 
     async index(req, res) {
+      const limit = 5;
       const orders = await Order.find({ customerId: req.user._id }, null, {
         sort: { createdAt: -1 },
+        limit,
       });
-      res.render('customers/order', { orders, moment });
+      const total = await Order.countDocuments({ customerId: req.user._id });
+      res.render('customers/order', { orders, moment, total, limit });
+    },
+
+    async more(req, res) {
+      const skip = parseInt(req.query.skip) || 0;
+      const limit = 5;
+      const orders = await Order.find({ customerId: req.user._id }, null, {
+        sort: { createdAt: -1 },
+        skip,
+        limit,
+      });
+      const total = await Order.countDocuments({ customerId: req.user._id });
+      return res.json({ orders, total, skip, limit });
     },
 
     async show(req, res) {
       const order = await Order.findById({ _id: req.params.id });
       try {
         if (req.user._id === order.customerId.toString()) {
-          res.render('customers/singleOrder', { order });
+          res.render('customers/singleOrder', { order, moment });
         } else {
           res.redirect('/');
         }
